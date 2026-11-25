@@ -17,6 +17,7 @@ class ConfigProfController extends AbstractController
     #[Route('/configprof/{id}', name: 'app_config_prof')]
     public function index(Request $request, EntityManagerInterface $entityManager, Professor $professor): Response
     {
+
         $formProfs = $this->createForm(ConfigProfType::class, $professor);
         $formProfs->handleRequest($request);
 

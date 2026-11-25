@@ -61,6 +61,11 @@ class EvaluationType extends AbstractType
                     return $er->findByProfessor($prof);
                 },
             ])
+            ->add('categorie', ClassName::class,  [
+                'label' => 'Categorie exemple de catégories : DS, TP, BTS Blanc …)'
+            ])
+
+
         ;
     }
 

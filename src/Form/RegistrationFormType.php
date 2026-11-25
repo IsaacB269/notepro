@@ -39,6 +39,11 @@ class RegistrationFormType extends AbstractType
                 'constraints' => [
                     new NotBlank([
                         'message' => 'Saisissez un mot de passe',
+
+                    ]),
+                    new PasswordStrength([ // la methodes PasswordStrength est utilisé
+                        'minScore' => PasswordStrength::STRENGTH_WEAK, //c'est le minimum de score du mdp, on le met en weak, cela return 1 donc c'est 60 caractere et plus
+                        'message' => 'saisissez un mot de passe plus complexe ', //message si le mdp ne respect pas la contrainte si dessus
                     ]),
                 ],
             ])

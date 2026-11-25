@@ -45,6 +45,11 @@ class ChangePasswordFormType extends AbstractType
                         new NotBlank([
                             'message' => 'Saisissez un mot de passe',
                         ]),
+                        new PasswordStrength([ // la methodes PasswordStrength est utilisé
+                            'minScore' => PasswordStrength::STRENGTH_STRONG, //la difficulté du mdp
+                            'message' => 'saisissez un mot de passe plus complexe ', //message si le mdp ne respect pas la contrainte si dessus
+                        ]),
+
                     ],
                     'label' => 'Nouveau mot de passe',
                     'attr' => [

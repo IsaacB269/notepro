@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes profs{% endblock %}
+
+{% block body %}
+    <h1>Mes profs</h1>
+
+    {% if professors is empty %}
+        <p>Aucun professeur n'enseigne à votre classe.</p>
+    {% else %}
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">Nom</th>
+                <th scope="col">Email</th>
+                <th scope="col">Matières</th>
+                <th scope="col">Contacter</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for professor in professors %}
+                <tr>
+                    <td>{{ professor.name }}</td>
+                    <td>{{ professor.email }}</td>
+                    <td>
+                        {% for subject in professor.subjects %}
+                            {{ subject.label }}{% if not loop.last %}, {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td>
+                        <a href="{{ path('app_student_mail_prof', {id: student.id}) }}">
+                            <button class="btn btn-primary">Envoyer un mail</button>
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+{% endblock %}

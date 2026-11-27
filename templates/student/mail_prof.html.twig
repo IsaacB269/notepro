@@ -1,0 +1,11 @@
+<div>
+    <p>Bonjour {{ professor.name }},</p>
+
+    <p>Vous avez reçu un message de {{ student.name }} ({{ student.classLevel ? student.classLevel.label : 'classe inconnue' }}).</p>
+
+    <blockquote style="border-left: 4px solid #ccc; margin-left: 0; padding-left: 12px; color: #555;">
+        {{ message|nl2br }}
+    </blockquote>
+
+    <p>— NotePro</p>
+</div>

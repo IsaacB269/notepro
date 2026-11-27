@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Contacter un prof{% endblock %}
+
+{% block body %}
+    <h1>Envoyer un mail à un professeur</h1>
+
+    {% for flash_error in app.flashes('reset_password_error') %}
+        <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
+    {% endfor %}
+
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button class="btn btn-primary">Envoyer</button>
+    {{ form_end(form) }}
+
+    <a href="{{ path('app_student_profs', {id: student.id}) }}">Retour à mes profs</a>
+{% endblock %}

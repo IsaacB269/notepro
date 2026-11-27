@@ -5,20 +5,34 @@
 {% block body %}
     <h1>Notes de {{ app.user.name }}</h1>
 
+    {% set average = student.average %}
+    <p>
+        <strong>Moyenne générale :</strong>
+        {% if average is not null %}
+            {{ average }}/20
+        {% else %}
+            Aucune note
+        {% endif %}
+    </p>
+
     <table class="table">
         <thead>
         <tr>
             <th scope="col">Evaluation</th>
+            <th scope="col">Catégorie</th>
             <th scope="col">Note</th>
             <th scope="col">Barème</th>
+            <th scope="col">Moyenne de classe</th>
         </tr>
         </thead>
         <tbody>
         {% for gr in student.grades %}
         <tr>
             <td>{{ gr.evaluation.label }}</td>
-            <td>{{ gr.grade }}</td>
+            <td>{{ gr.evaluation.category ? gr.evaluation.category.label : '-' }}</td>
+            <td>{{ gr.grade ?? 'Absent' }}</td>
             <td>{{ gr.evaluation.bareme }}</td>
+            <td>{{ gr.evaluation.classAverage ? gr.evaluation.classAverage ~ '/' ~ gr.evaluation.bareme : '-' }}</td>
         </tr>
         {% endfor %}
         </tbody>

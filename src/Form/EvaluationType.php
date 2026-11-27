@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Entity\Category;
 use App\Entity\ClassLevel;
 use App\Entity\Evaluation;
 use App\Entity\Professor;
@@ -61,8 +62,13 @@ class EvaluationType extends AbstractType
                     return $er->findByProfessor($prof);
                 },
             ])
-            ->add('categorie', ClassName::class,  [
-                'label' => 'Categorie exemple de catégories : DS, TP, BTS Blanc …)'
+            ->add('category', EntityType::class, [
+                'class' => Category::class,
+                'label' => 'Catégorie (DS, TP, BTS Blanc …)',
+                'choice_label' => 'label',
+                'placeholder' => 'Sélectionner une catégorie',
+                'expanded' => false,
+                'multiple' => false,
             ])
 
 

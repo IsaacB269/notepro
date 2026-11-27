@@ -74,4 +74,60 @@ class Student extends User
         }
         return null;
     }
+
+    /**
+     * Moyenne générale de l'étudiant, ramenée sur 20.
+     * Chaque note est normalisée sur 20 (note / barème * 20) pour que les
+     * évaluations avec des barèmes différents soient comparables.
+     * Les évaluations où l'étudiant était absent (note non renseignée) ne comptent pas.
+     */
+    public function getAverage(): ?float
+    {
+        $sum = 0;
+        $count = 0;
+        foreach ($this->getGrades() as $grade) {
+            if ($grade->getGrade() === null) {
+                continue;
+            }
+            $bareme = $grade->getEvaluation()?->getBareme();
+            if ($bareme === null || $bareme === 0) {
+                continue;
+            }
+            $sum += (float) $grade->getGrade() / $bareme * 20;
+            $count++;
+        }
+
+        return $count > 0 ? round($sum / $count, 2) : null;
+    }
+
+    /**
+     * Moyenne de l'étudiant pour une matière donnée, ramenée sur 20
+     * (chaque note normalisée sur 20, les absences non comptées).
+     */
+    public function getAverageBySubject(\App\Entity\Subject $subject): ?float
+    {
+        $sum = 0;
+        $count = 0;
+        foreach ($this->getGrades() as $grade) {
+            if ($grade->getGrade() === null) {
+                continue;
+            }
+            $evaluation = $grade->getEvaluation();
+            $bareme = $evaluation?->getBareme();
+            if ($bareme === null || $bareme === 0 || $evaluation->getSubject() === null) {
+                continue;
+            }
+            $gradeSubject = $evaluation->getSubject();
+            // comparaison par id quand il existe, sinon par identité d'objet
+            if ($gradeSubject->getId() !== null && $subject->getId() !== null
+                ? $gradeSubject->getId() !== $subject->getId()
+                : $gradeSubject !== $subject) {
+                continue;
+            }
+            $sum += (float) $grade->getGrade() / $bareme * 20;
+            $count++;
+        }
+
+        return $count > 0 ? round($sum / $count, 2) : null;
+    }
 }

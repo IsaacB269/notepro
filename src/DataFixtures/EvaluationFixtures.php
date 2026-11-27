@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Category;
 use App\Entity\ClassLevel;
 use App\Entity\Evaluation;
 use App\Entity\Professor;
@@ -32,6 +33,7 @@ class EvaluationFixtures extends Fixture implements DependentFixtureInterface
                         $eval->setProfessor($professor);
                         $eval->setSubject($subject);
                         $eval->setClassLevel($classLevel);
+                        $eval->setCategory($this->getReference('category_' . $faker->numberBetween(0, 3), Category::class));
 
                         $manager->persist($eval);
                         $this->addReference('evaluation_' . $counter++, $eval);
@@ -45,6 +47,7 @@ class EvaluationFixtures extends Fixture implements DependentFixtureInterface
     public function getDependencies(): array
     {
         return [
+            CategoryFixtures::class,
             ClassLevelFixtures::class,
             SubjectFixtures::class,
             UserFixtures::class,

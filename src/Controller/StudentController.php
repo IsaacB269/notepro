@@ -4,12 +4,15 @@ namespace App\Controller;
 
 use App\Entity\PreviousPasswords;
 use App\Entity\Student;
+use App\Form\ContactProfessorType;
 use App\Form\StudentType;
 use App\Repository\StudentRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -110,6 +113,56 @@ class StudentController extends AbstractController
             'student' => $student,
             'grades' => $student->getGrades()
 
+        ]);
+    }
+
+    #[Route('/{id}/profs', name: 'app_student_profs', methods: ['GET'])]
+    public function profs(Student $student): Response
+    {
+        // les professeurs de l'étudiant = les professeurs qui enseignent à sa classe
+        $professors = $student->getClassLevel()
+            ? $student->getClassLevel()->getProfessors()
+            : [];
+
+        return $this->render('student/myprofs.html.twig', [
+            'student' => $student,
+            'professors' => $professors,
+        ]);
+    }
+
+    #[Route('/{id}/profs/mail', name: 'app_student_mail_prof', methods: ['GET', 'POST'])]
+    public function mailProfessor(Request $request, Student $student, MailerInterface $mailer): Response
+    {
+        $form = $this->createForm(ContactProfessorType::class, null, [
+            'student' => $student,
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $professor = $form->get('professor')->getData();
+
+            $email = (new TemplatedEmail())
+                ->from($student->getEmail())
+                ->to($professor->getEmail())
+                ->subject($form->get('subject')->getData())
+                ->htmlTemplate('student/mail_prof.html.twig')
+                ->context([
+                    'student' => $student,
+                    'professor' => $professor,
+                    'message' => $form->get('message')->getData(),
+                ])
+            ;
+
+            $mailer->send($email);
+
+            $this->addFlash('success', 'Votre mail a bien été envoyé à ' . $professor->getName() . '.');
+
+            return $this->redirectToRoute('app_student_profs', ['id' => $student->getId()]);
+        }
+
+        return $this->render('student/mail_prof_form.html.twig', [
+            'student' => $student,
+            'form' => $form,
         ]);
     }
 }

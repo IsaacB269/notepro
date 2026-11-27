@@ -40,11 +40,8 @@ class Evaluation
     #[ORM\OneToMany(mappedBy: 'evaluation', targetEntity: Grade::class, orphanRemoval: true)]
     private Collection $grades;
 
-    #[ORM\Column(length: 255)]
-    private ?string $Evaluation = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $Categorie = null;
+    #[ORM\ManyToOne(inversedBy: 'evaluations')]
+    private ?Category $category = null;
 
     public function __construct()
     {
@@ -168,26 +165,50 @@ class Evaluation
         return null;
     }
 
-    public function getEvaluation(): ?string
+    /**
+     * Moyenne de classe pour cette évaluation.
+     * Les étudiants absents (note non renseignée) ne sont pas comptés.
+     */
+    public function getClassAverage(): ?float
     {
-        return $this->Evaluation;
+        $sum = 0;
+        $count = 0;
+        foreach ($this->getGrades() as $grade) {
+            if ($grade->getGrade() === null) {
+                continue;
+            }
+            $sum += (float) $grade->getGrade();
+            $count++;
+        }
+
+        return $count > 0 ? round($sum / $count, 2) : null;
     }
 
-    public function setEvaluation(string $Evaluation): static
+    /**
+     * Moyenne de classe ramenée sur 20, pour pouvoir comparer les évaluations
+     * qui n'ont pas le même barème.
+     */
+    public function getClassAverageOn20(): ?float
     {
-        $this->Evaluation = $Evaluation;
+        if ($this->bareme === null || $this->bareme === 0) {
+            return null;
+        }
+        $average = $this->getClassAverage();
+        if ($average === null) {
+            return null;
+        }
 
-        return $this;
+        return round($average / $this->bareme * 20, 2);
     }
 
-    public function getCategorie(): ?string
+    public function getCategory(): ?Category
     {
-        return $this->Categorie;
+        return $this->category;
     }
 
-    public function setCategorie(string $Categorie): static
+    public function setCategory(?Category $category): static
     {
-        $this->Categorie = $Categorie;
+        $this->category = $category;
 
         return $this;
     }
